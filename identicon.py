@@ -21,9 +21,8 @@ def make_identicon(seed, name="simple_image"):
     random.seed(seed)
 
     hue = random.random()
-    background_color = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(hue, 0.5, 0.95))
+    background_color = hue_to_rgb(hue)
 
-    # Create a new image with a seeded background
     width, height = 8, 8
     image = Image.new("RGB", (width, height), background_color)
 
@@ -36,19 +35,17 @@ def make_identicon(seed, name="simple_image"):
     hue = next_hue(hue)
     second_fg = hue_to_rgb(hue)
 
-    # placeholder pattern
-    for i in range(8):
-        for j in range(16):
+    for i in range(width//2):
+        for j in range(width):
             cmp = random.random()
-            if cmp < 0.33:
+            if cmp < 0.25:
                 draw.point((i, j), fill=first_fg)
                 draw.point((width - i - 1, j), fill=first_fg)
-            elif cmp < 0.66:
+            elif cmp < 0.50:
                 draw.point((i, j), fill=second_fg)
                 draw.point((width - i - 1, j), fill=second_fg)
 
     image.save(f"{name}.png")
-
 
 usage = """
 Identicon Generator
