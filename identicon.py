@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw
 from docopt import docopt
-import hashlib
 import colorsys
+import random
 
 golden_ratio_conjugate = 0.618033988749895
 
@@ -17,29 +17,14 @@ def hue_to_rgb(hue: float) -> tuple:
     return tuple(int(x * 255) for x in colorsys.hsv_to_rgb(hue, 0.5, 0.95))
 
 
-def next_seq_chunk(inp):
-    """A generator to divide a sequence into chunks units."""
-
-    seq = None
-    while True:
-        if not seq:
-            seq = inp
-        yield int(seq[:2], 16) / 255
-        seq = seq[2:]
-
-
 def make_identicon(seed, name="simple_image"):
-    hasher = hashlib.sha1()
-    hasher.update(seed.encode("utf-8"))
-    seed = hasher.hexdigest()
+    random.seed(seed)
 
-    seq = next_seq_chunk(seed)
-
-    hue = next(seq)
+    hue = random.random()
     background_color = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(hue, 0.5, 0.95))
 
     # Create a new image with a seeded background
-    width, height = 16, 16
+    width, height = 8, 8
     image = Image.new("RGB", (width, height), background_color)
 
     # Get a drawing object to add shapes and text
@@ -52,13 +37,15 @@ def make_identicon(seed, name="simple_image"):
     second_fg = hue_to_rgb(hue)
 
     # placeholder pattern
-    for i in range(16):
+    for i in range(8):
         for j in range(16):
-            cmp = next(seq)
+            cmp = random.random()
             if cmp < 0.33:
                 draw.point((i, j), fill=first_fg)
+                draw.point((width - i - 1, j), fill=first_fg)
             elif cmp < 0.66:
                 draw.point((i, j), fill=second_fg)
+                draw.point((width - i - 1, j), fill=second_fg)
 
     image.save(f"{name}.png")
 
