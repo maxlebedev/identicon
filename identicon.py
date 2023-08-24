@@ -6,6 +6,7 @@ import colorsys
 golden_ratio_conjugate = 0.618033988749895
 
 
+# TODO: we could cycle forward a variable number of times
 def next_hue(hue: float) -> float:
     hue += golden_ratio_conjugate
     hue = hue % 1
@@ -16,12 +17,25 @@ def hue_to_rgb(hue: float) -> tuple:
     return tuple(int(x * 255) for x in colorsys.hsv_to_rgb(hue, 0.5, 0.95))
 
 
+def next_seq_chunk(inp):
+    """A generator to divide a sequence into chunks units."""
+
+    seq = None
+    while True:
+        if not seq:
+            seq = inp
+        yield int(seq[:2], 16) / 255
+        seq = seq[2:]
+
+
 def make_identicon(seed, name="simple_image"):
     hasher = hashlib.sha1()
     hasher.update(seed.encode("utf-8"))
     seed = hasher.hexdigest()
 
-    hue = int(seed[:2], 16) / 100
+    seq = next_seq_chunk(seed)
+
+    hue = next(seq)
     background_color = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(hue, 0.5, 0.95))
 
     # Create a new image with a seeded background
@@ -32,17 +46,18 @@ def make_identicon(seed, name="simple_image"):
     draw = ImageDraw.Draw(image)
 
     hue = next_hue(hue)
-    first_fg = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(hue, 0.5, 0.95))
+    first_fg = hue_to_rgb(hue)
 
     hue = next_hue(hue)
-    second_fg = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(hue, 0.5, 0.95))
+    second_fg = hue_to_rgb(hue)
 
     # placeholder pattern
     for i in range(16):
         for j in range(16):
-            if i % 2 == 0 and j % 2 == 1:
+            cmp = next(seq)
+            if cmp < 0.33:
                 draw.point((i, j), fill=first_fg)
-            if i % 2 == 1 and j % 2 == 0:
+            elif cmp < 0.66:
                 draw.point((i, j), fill=second_fg)
 
     image.save(f"{name}.png")
