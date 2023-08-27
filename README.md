@@ -15,7 +15,7 @@ I found a strategy to generate colors that work well together. Subjectively, I l
 Symmetry is the easy answer here. The human mind looks for patterns, and symmetry is one of the easier ones.
 
 ## Memorability
-Not entiely distinct from Legability and Uniqueness, I think its important to pay particular attention to how easy it is to look at an image and recall having seen it before. I'm hoping that showing one color (the background) more prominently helps with this.
+Not entirely distinct from Legability and Uniqueness, I think its important to pay particular attention to how easy it is to look at an image and recall having seen it before. I'm hoping that showing one color (the background) more prominently helps with this.
 
 # Next Steps
 
